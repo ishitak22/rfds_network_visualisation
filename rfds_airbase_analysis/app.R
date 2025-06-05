@@ -4,10 +4,12 @@ library(lubridate)
 
 
 # Load raw data
+
 flight_summary <- read_csv("data/RFDS_flightdata_July2022.csv")
 bases <- read_csv("data/RFDS_bases.csv")
 
 # Looking at dataset
+
 glimpse(flight_summary)
 glimpse(bases)
 
@@ -27,3 +29,11 @@ d3 <- location_summary %>% filter(Destination %in% c(
   "Charleville (CTL / YBCV)", "Longreach (YLRE)", "Mount Isa (ISA / YBMA)",
   "Rockhampton (ROK / YBRK)", "Roma (RMA / YROM)", "Townsville (TSV / YBTL)"
 ))
+
+# Creating day and night labels
+
+new <- d3 %>%
+  group_by(Destination, AircraftId, ArrivalAEST) %>%
+  count()
+
+new$Timeoftheday <- ifelse(new$ArrivalAEST >= hms("06:00:00") & new$ArrivalAEST < hms("18:00:00"), "Day", "Night")
