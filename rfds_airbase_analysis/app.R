@@ -17,3 +17,4 @@ a <- lapply(df, function(x) x[1])
 flight_split <- mutate(flight_summary, location = a)
 location_summary <- merge(x = bases, y = flight_split, by.x = c("Location"), by.y = c("location"))
 
+write_csv(location_summary, "data/finaldataset.csv")
