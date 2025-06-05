@@ -1,7 +1,7 @@
 library(tidyverse)
 library(readr)
 library(lubridate)
-
+library(ggplot2)
 
 # Load raw data
 
@@ -37,3 +37,11 @@ new <- d3 %>%
   count()
 
 new$Timeoftheday <- ifelse(new$ArrivalAEST >= hms("06:00:00") & new$ArrivalAEST < hms("18:00:00"), "Day", "Night")
+
+#Bar Chart
+
+VIZ1 <- ggplot(new, aes(x = Destination, fill = Timeoftheday)) +
+  geom_bar() +
+  scale_fill_discrete(labels = c("Day Time(6am-6pm)", "Night Time(6pm-6am)")) +
+  theme_minimal()
+
