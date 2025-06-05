@@ -1,0 +1,194 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset='utf-8' />
+    <title>FIT5147 S1 2022 - Programming Exercise 3: D3</title>
+    <style>
+        .content {
+            display: inline-block;
+            vertical-align: top;
+        }
+        .side-bar {
+            display: inline-block;
+            vertical-align: top;
+            background-color: lightgrey;
+            box-sizing: border-box;
+            width: 450px;
+            height: 1000px;
+            padding: 30px 30px 40px 30px;
+            text-align: left;
+            font-size: large;
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+        .boundary {
+            stroke: black;
+            stroke-width: 1;
+            opacity: 0.8;
+        }
+        #tooltip-container {
+            position: absolute;
+            background-color: white;
+            padding: 0px 15px 0px 15px;
+            display: none;
+            border: 1px solid #555;
+        }
+        #tooltip-text {
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div style="text-align: left;">
+        <div class="side-bar">
+	    <h1> Royal Flying Doctor Services - QLD flights in July 2022</h1>
+
+	    <p>The <a href="https://www.flyingdoctor.org.au/about-the-
+rfds/">Royal Flying Doctor Service (RFDS)</a> provides an emergency medical service in Australia, flying to rural and remote locations. In Queensland (QLD), many of those flights are to and from the city of Brisbane, but its regional bases are also vital in getting quick medical aid. This visualisation shows a simplified version of the QLD boundaries and the main flight routes. This data was provided by the RFDS over various weeks in July 2022. The visualisation shows all airports that the RFDS aircraft flew to and from with the RFDS bases indicated. Only flight routes that were flown more than once and didn't involve Brisbane are shown.</p>
+
+<img src="https://www.flyingdoctor.org.au/download-document/rfds-sunset/" alt="PC-12 into the sunset" width="400">
+	    <p style="font-size: medium;"><i>Photo via <a href="https://www.flyingdoctor.org.au/download-document/rfds-sunset/">Image: Library RFDS</a></i></P>
+            <h3>Acknowledgements</h3>
+            <p style="font-size: medium;"><i> This data is based on that provided from the FlightAware website during July 2022
+(<a href="https://www.flyingdoctor.org.au/map/">https://www.flyingdoctor.org.au/map/</a>, <a href="https://flightaware.com">https://flightaware.com</a>).</p>
+   	    
+	</div>
+
+        <div class="content">    
+            <svg id="canvas" width="1500px" height="1000px"></svg>
+        </div>
+    </div>
+
+    <div id="tooltip-container">
+        <p id="tooltip-text">Tooltip text goes here.</p>
+    </div>
+
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script type="text/javascript">
+        // #region Existing code in template. Avoid modifying unless absolutely necessary!
+        var svg = d3.select("#canvas");
+
+        // URLs to data sources. DO NOT MODIFY. DO NOT SAVE THESE LOCALLY.
+
+        // STATE BOUNDARIES
+        var boundariesDataPath = "https://raw.githubusercontent.com/michaelniemann/FIT5147-S2-2022-Data/main/state_boundaries.json";
+
+        // AIRPORT LOCATIONS
+        var locationDataPath = "https://raw.githubusercontent.com/michaelniemann/FIT5147-S2-2022-Data/main/PE3_RFDS_airports.json";
+
+        // FLIGHT ROUTES
+        var routeDataPath = "https://raw.githubusercontent.com/michaelniemann/FIT5147-S2-2022-Data/main/PE3_RFDS_flightroutes.json";
+      
+        // Add the Queensland boundary polygons. Adapted from original code courtesy of Merry Hoang
+		d3.json(boundariesDataPath, function(data) {
+            
+			var projection = d3.geoIdentity()
+				.reflectY(true)
+				.fitExtent([
+                                        [0, 100],
+					[1000, 1400]
+				], data);
+
+			var path = d3.geoPath()
+				.projection(projection)
+
+			svg.selectAll("path").filter(".boundary")
+				.data(data.features)
+				.enter()
+				.append("path")
+				.attr('class', "boundary")
+				.attr("d", path)
+			.style("fill", function(d) {
+			    return 'rgba(250,250,50)'
+			})
+                .lower();
+		})
+        // #endregion
+
+      d3.json(locationDataPath, function(g) {
+        console.log(g)
+        var circles = svg.selectAll("circle")
+        .data(g)
+        .enter()
+        .append("circle");
+
+        var circleAttributes = circles
+        .attr("cx", function (g) {return g.coord[0];})
+        .attr("cy", function (g) {return g.coord[1];})
+        .attr("r", function (g) {return g.arrivals + 5;})
+        .style("fill", function(g) {
+
+            var returnColor;
+
+            if (g.location === 'Brisbane') { returnColor = "blue";
+        } else if (g.RFDSbase === 'Y') { returnColor = "red";}
+
+        return returnColor;
+        })
+
+        .on('mouseover', function(g) {
+            svg.selectAll('line').attr("opacity", 0.5);
+            svg.selectAll('circle').attr("opacity", 0.5);
+            d3.select(this).attr("opacity", 1).style("stroke", "pink")
+            d3.select('#tooltip-container')
+            .style('display', 'inline')
+            .select('#tooltip-text')
+            .text("Location: " + g.location + "  RFDS Base(Y/N): " + g.RFDSbase + "  Number of Arrivals: " + g.arrivals + "  Number of Departures: " + g.departures)
+        })
+
+        .on('mouseout', function(g) {
+            svg.selectAll('line').attr('opacity', 1).style("stroke", "green");
+            svg.selectAll('circle').attr('opacity', 1).style("stroke", "none");
+            d3.select('#tooltip-container').style('display', 'none').select('#tooltip-text').text("");
+        })
+
+        .on('mousemove', function(g) {
+            d3.select('#tooltip-container')
+            .style('left', d3.event,pageX + 10 +'px')
+            .style('top', d3.event.pageY + 10 +'px')
+        })
+
+      });
+      
+      d3.json(routeDataPath, function(a) {
+        console.log(a)
+        svg.selectAll("line")
+        .data(a)
+        .enter()
+        .append("line")
+        .attr("stroke", "#555")
+        .attr("stroke-opacity", 0.7)
+        .attr("stroke-width", function(a) {return a.flights;})
+        .attr("x1", function(a) {return a.routeCoords.startCoords[0];})
+        .attr("y1", function(a) {return a.routeCoords.startCoords[1];})
+        .attr("x2", function(a) {return a.routeCoords.endCoords[0];})
+        .attr("y2", function(a) {return a.routeCoords.endCoords[1];})
+
+        .on('mouseover', function(a) {
+            svg.selectAll('line').attr("opacity", 0.5);
+            svg.selectAll('circle').attr("opacity", 0.5);
+            d3.select(this).attr("opacity", 1).style("stroke", "pink")
+            d3.select('#tooltip-container')
+            .style('display', 'inline')
+            .select('#tooltip-text')
+            .text("Departure Airport: " + a.start + "  Arrival Airport: " + a.end + "  Number of trips: " + a.flights + "  Average Time taken: " + a.avgDuration + "  Distance Travelled: " + Math.round(a.distance))
+        })
+
+        .on('mouseout', function(a) {
+            svg.selectAll('line').attr('opacity', 1).style("stroke", "pink");
+            svg.selectAll('circle').attr('opacity', 1).style("stroke", "none");
+            d3.select('#tooltip-container').style('display', 'none').select('#tooltip-text').text("");
+        })
+
+        .on('mousemove', function(a) {
+            d3.select('#tooltip-container')
+            .style('left', d3.event.pageX + 10 + 'px')
+            .style('top', d3.event.pageY + 10 + 'px')
+        })
+      });
+  
+    </script>
+</body>
+</html>
