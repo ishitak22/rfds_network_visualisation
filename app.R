@@ -2,6 +2,7 @@ library(tidyverse)
 library(readr)
 library(lubridate)
 library(ggplot2)
+library(shiny)
 
 # Load raw data
 
@@ -45,3 +46,12 @@ VIZ1 <- ggplot(new, aes(x = Destination, fill = Timeoftheday)) +
   scale_fill_discrete(labels = c("Day Time(6am-6pm)", "Night Time(6pm-6am)")) +
   theme_minimal()
 
+# Shiny skeleton
+
+ui <- fluidPage(
+  titlePanel("RFDS Queensland Base Arrivals")
+)
+
+server <- function(input, output, session) {}
+
+shinyApp(ui, server)
