@@ -54,22 +54,9 @@ VIZ1 <- ggplot(new, aes(x = Destination, fill = Timeoftheday)) +
     fill = "Time of the day"
   )
 
-# Shiny skeleton
+print(VIZ1)
 
-ui <- fluidPage(
-  titlePanel("RFDS Queensland Base Arrivals"),
-  br(),
-  plotOutput("bar_chart", height = "500px")
-)
-
-server <- function(input, output, session) {
-  output$bar_chart <- renderPlot({
-    VIZ1
-  })
-}
-
-shinyApp(ui, server)
-
+ggsave("outputs/rfds_arrivals_by_daytime.png", VIZ1, width = 10, height = 6)
 
 
 
