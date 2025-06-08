@@ -57,7 +57,7 @@ VIZ1 <- ggplot(new, aes(x = Destination, fill = Timeoftheday)) +
 print(VIZ1)
 
 ggsave("outputs/rfds_arrivals_by_daytime.png", VIZ1, width = 10, height = 6)
-
+1
 
 
 
