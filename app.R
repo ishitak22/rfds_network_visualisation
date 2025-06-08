@@ -23,6 +23,8 @@ location_summary <- merge(x = bases, y = flight_split, by.x = c("Location"), by.
 
 write_csv(location_summary, "data/finaldataset.csv")
 
+location_summary <- read_csv("data/finaldataset.csv")
+
 # Filter to QLD bases
 
 d3 <- location_summary %>% filter(Destination %in% c(
@@ -44,14 +46,31 @@ new$Timeoftheday <- ifelse(new$ArrivalAEST >= hms("06:00:00") & new$ArrivalAEST 
 VIZ1 <- ggplot(new, aes(x = Destination, fill = Timeoftheday)) +
   geom_bar() +
   scale_fill_discrete(labels = c("Day Time(6am-6pm)", "Night Time(6pm-6am)")) +
-  theme_minimal()
+  theme_minimal() +
+  labs(
+    title = "RFDS Flight Arrivals by Time of Day",
+    x = "Destination",
+    y = "Number of Flights",
+    fill = "Time of the day"
+  )
 
 # Shiny skeleton
 
 ui <- fluidPage(
-  titlePanel("RFDS Queensland Base Arrivals")
+  titlePanel("RFDS Queensland Base Arrivals"),
+  br(),
+  plotOutput("bar_chart", height = "500px")
 )
 
-server <- function(input, output, session) {}
+server <- function(input, output, session) {
+  output$bar_chart <- renderPlot({
+    VIZ1
+  })
+}
 
 shinyApp(ui, server)
+
+
+
+
+
