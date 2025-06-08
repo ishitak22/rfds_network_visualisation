@@ -10,7 +10,7 @@ ui <- fluidPage(
   leafletOutput("map", width = "100%", height = "700px"),
   
   p("This map shows Royal Flying Doctor Service (RFDS) bases where flights occurred in July 2022"),
-  p("Click any marker to see the destination airport name")
+  p("Click any marker to see the Base airport name")
 )
 
 server <- function(input, output, session) {
@@ -20,8 +20,8 @@ server <- function(input, output, session) {
       addMarkers(
         lng = ~Longitude,
         lat = ~Latitude,
-        label = ~as.character(Destination),
-        popup = ~paste("Destination:", Destination)
+        label = ~as.character(Location),
+        popup = ~paste("Base Location:", Location)
       ) %>%
       setView(lng = 134, lat = -25, zoom = 4)
   })
