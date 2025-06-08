@@ -7,10 +7,21 @@ location_summary <- read.csv("data/finaldataset.csv")
 ui <- fluidPage(
   titlePanel("RFDS Bases across Australia - July 2022"),
   
-  leafletOutput("map", width = "100%", height = "700px"),
+  sidebarPanel(
+    sidebarLayout(
+      selectInput("aircraft", "Select Aircraft Type:",
+                  choices = c("All", unique(location_summary$AircraftId))),
+      width = 3
+    ),
   
+ mainPanel(      
+  leafletOutput("map", width = "100%", height = "700px"),
+
   p("This map shows Royal Flying Doctor Service (RFDS) bases where flights occurred in July 2022"),
-  p("Click any marker to see the destination airport name")
+  p("Select an aircraft type from the dropdown to explore related RFDS base locations."),
+  width = 9
+)
+)
 )
 
 server <- function(input, output, session) {
@@ -20,8 +31,8 @@ server <- function(input, output, session) {
       addMarkers(
         lng = ~Longitude,
         lat = ~Latitude,
-        label = ~as.character(Destination),
-        popup = ~paste("Destination:", Destination)
+        label = ~as.character(Location),
+        popup = ~paste("Base Location:", Location)
       ) %>%
       setView(lng = 134, lat = -25, zoom = 4)
   })
