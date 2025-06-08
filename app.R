@@ -12,3 +12,19 @@ ui <- fluidPage(
   p("This map shows Royal Flying Doctor Service (RFDS) bases where flights occurred in July 2022"),
   p("Click any marker to see the destination airport name")
 )
+
+server <- function(input, output, session) {
+  utput$map <- renderLeaflet({
+    leaflet(data = location_summary) %>%
+      addTiles() %>%
+      addMarkers(
+        lng = ~Longitude,
+        lat = ~Latitude,
+        label = ~as.character(Destination),
+        popup = ~paste("Destination:", Destination)
+      ) %>%
+      setView(lng = 134, lat = -25, zoom = 4)
+  })
+}
+
+shinyApp(ui = ui, server = server)
