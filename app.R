@@ -14,7 +14,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  utput$map <- renderLeaflet({
+  output$map <- renderLeaflet({
     leaflet(data = location_summary) %>%
       addTiles() %>%
       addMarkers(
