@@ -7,8 +7,8 @@ location_summary <- read.csv("data/finaldataset.csv")
 ui <- fluidPage(
   titlePanel("RFDS Bases across Australia - July 2022"),
   
-  sidebarPanel(
-    sidebarLayout(
+  sidebarLayout(
+    sidebarPanel(
       selectInput("aircraft", "Select Aircraft Type:",
                   choices = c("All", unique(location_summary$AircraftId))),
       width = 3
