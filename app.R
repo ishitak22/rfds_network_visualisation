@@ -25,14 +25,25 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
+  
+  filtered_data <- reactive({
+    if (input$aircraft == "All") {
+      location_summary
+    } else {
+      location_summary %>% filter(AircraftId == input$aircraft)
+    }
+  })
+  
   output$map <- renderLeaflet({
-    leaflet(data = location_summary) %>%
+    leaflet(data = filtered_data()) %>%
       addTiles() %>%
       addMarkers(
         lng = ~Longitude,
         lat = ~Latitude,
         label = ~as.character(Location),
-        popup = ~paste("Base Location:", Location)
+        popup = ~paste("Base Location:", Location,
+                       "<br>Aircraft:", AircratId,
+                       "<br>Destination:", Destination)
       ) %>%
       setView(lng = 134, lat = -25, zoom = 4)
   })
