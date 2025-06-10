@@ -11,8 +11,6 @@ ui <- fluidPage(
     sidebarPanel(
       selectInput("aircraft", "Select Aircraft Type:",
                   choices = c("All", unique(location_summary$AircraftId))),
-      br(),
-      downloadButton("download_table", "Download Data Table"),
       width = 3
     ),
   
@@ -65,22 +63,10 @@ server <- function(input, output, session) {
   
   output$flight_table <- DT::renderDataTable({
     filtered_data() %>%
-      group_by(Location, AircraftId) %>%
+      group_by(AircraftId, Location) %>%
       summarise(Flights = n(), .groups = "drop")
   })
-  
- output$download_table <- downloadHandler(
-   filename = function() {
-     paste("rfds_summary_", Sys.Date(), ".csv", sep = "")
-   },
-   content = function(file) {
-     table_data <- filtered_data() %>%
-       group_by(Location, AircraftId) %>%
-       summarise(Flights = n(), .groups = "drop")
-     
-     write.csv(able_data, file, row.names = FALSE)
-   }
- )
+ 
 }
 
 shinyApp(ui = ui, server = server)
