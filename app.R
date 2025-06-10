@@ -19,6 +19,7 @@ ui <- fluidPage(
 
   p("This map shows Royal Flying Doctor Service (RFDS) bases where flights occurred in July 2022"),
   p("Select an aircraft type from the dropdown to explore related RFDS base locations."),
+  DT::dataTableOutput("flight_table"),
   width = 9
 )
 )
@@ -58,6 +59,12 @@ server <- function(input, output, session) {
                        "<br>Destination:", Destination)
       ) %>%
       setView(lng = 134, lat = -25, zoom = 4)
+  })
+  
+  output$flight_table <- DT::renderDataTable({
+    filtered_data() %>%
+      group_by(Location, AircraftId) %>%
+      summarise(Flights = n(), .groups = "drop")
   })
 }
 
