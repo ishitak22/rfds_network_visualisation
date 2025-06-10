@@ -28,10 +28,17 @@ server <- function(input, output, session) {
   
   filtered_data <- reactive({
     if (input$aircraft == "All") {
-      location_summary
+      df <- location_summary
     } else {
-      location_summary %>% filter(AircraftId == input$aircraft)
+      df <- location_summary %>% filter(AircraftId == input$aircraft)
     }
+    
+    base_counts <- df %>%
+      group_by(Location, Longitude, Latitude) %>%
+      summarise(flight_count = n(), .groups = "drop")
+    
+    df <- left_join(df, base_counts, by = c("Location", "Longitude", "Latitude"))
+    df
   })
   
   output$map <- renderLeaflet({
@@ -42,7 +49,7 @@ server <- function(input, output, session) {
         lat = ~Latitude,
         label = ~as.character(Location),
         popup = ~paste("Base Location:", Location,
-                       "<br>Aircraft:", AircratId,
+                       "<br>Aircraft:", AircraftId,
                        "<br>Destination:", Destination)
       ) %>%
       setView(lng = 134, lat = -25, zoom = 4)
