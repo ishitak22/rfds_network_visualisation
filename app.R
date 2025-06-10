@@ -44,11 +44,16 @@ server <- function(input, output, session) {
   output$map <- renderLeaflet({
     leaflet(data = filtered_data()) %>%
       addTiles() %>%
-      addMarkers(
+      addCircleMarkers(
         lng = ~Longitude,
         lat = ~Latitude,
+        radius = ~log1p(flight_count) * 4,
+        stroke = FALSE,
+        fillColor = "steelblue",
+        fillOpacity = 0.7,
         label = ~as.character(Location),
         popup = ~paste("Base Location:", Location,
+                       "<br>Flights:", flight_count,
                        "<br>Aircraft:", AircraftId,
                        "<br>Destination:", Destination)
       ) %>%
