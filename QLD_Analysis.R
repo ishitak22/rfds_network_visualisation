@@ -45,19 +45,20 @@ new$Timeoftheday <- ifelse(new$ArrivalAEST >= hms("06:00:00") & new$ArrivalAEST 
 
 VIZ1 <- ggplot(new, aes(x = Destination, fill = Timeoftheday)) +
   geom_bar() +
-  scale_fill_discrete(labels = c("Day Time(6am-6pm)", "Night Time(6pm-6am)")) +
-  theme_minimal() +
+  scale_fill_discrete(labels = c("Day Time (6am–6pm)", "Night Time (6pm–6am)")) +
+  theme_minimal(base_size = 13) +
   labs(
     title = "RFDS Flight Arrivals by Time of Day",
     x = "Destination",
     y = "Number of Flights",
     fill = "Time of the day"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    legend.title = element_text(face = "bold")
   )
 
 print(VIZ1)
 
-ggsave("outputs/rfds_arrivals_by_daytime.png", VIZ1, width = 10, height = 6)
-1
-
-
-
+ggsave("outputs/rfds_arrivals_by_daytime.png", VIZ1, width = 11, height = 6.5)
