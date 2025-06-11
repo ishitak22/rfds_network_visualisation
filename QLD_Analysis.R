@@ -61,4 +61,10 @@ VIZ1 <- ggplot(new, aes(x = Destination, fill = Timeoftheday)) +
 
 print(VIZ1)
 
-ggsave("outputs/rfds_arrivals_by_daytime.png", VIZ1, width = 11, height = 6.5)
+ggsave(
+  "outputs/rfds_arrivals_by_daytime.png",
+  VIZ1,
+  width = 11,
+  height = 6.5,
+  bg = "white"  # 👈 this ensures no black/dark background
+)
